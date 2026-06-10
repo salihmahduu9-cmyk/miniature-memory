@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lord Zayro | Premium Script Shield</title>
+    <!-- Tailwind CSS v4 & Lucide Icons -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -29,6 +30,7 @@
 </head>
 <body class="animated-bg text-slate-100 font-sans min-h-screen p-4 md:p-8 flex flex-col justify-between selection:bg-rose-500 selection:text-white">
 
+    <!-- Header -->
     <header class="w-full max-w-6xl mx-auto flex justify-between items-center bg-slate-950/80 backdrop-blur-xl border border-slate-800/80 p-5 rounded-2xl mb-8 shadow-2xl">
         <div class="flex items-center gap-4">
             <div class="p-3 bg-cyan-500/10 rounded-xl text-cyan-400 border border-cyan-500/20 shadow-[0_0_15px_rgba(6,182,212,0.15)]">
@@ -45,9 +47,12 @@
         </div>
     </header>
 
+    <!-- Main Content -->
     <main class="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 items-start flex-grow">
         
+        <!-- Left Sidebar: Features & Code Generator -->
         <div class="lg:col-span-1 space-y-6">
+            <!-- Features Panel -->
             <div class="bg-slate-950/60 backdrop-blur-md border border-slate-900 p-5 rounded-2xl shadow-xl">
                 <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400 mb-4 flex items-center gap-2">
                     <i data-lucide="zap" class="w-4 h-4 text-amber-400"></i> مميزات المنظومة الذكية
@@ -60,6 +65,7 @@
                 </ul>
             </div>
 
+            <!-- Auto Generated Loadstring Code Output -->
             <div id="loadstringCard" class="bg-slate-950/90 backdrop-blur-md border border-slate-800 p-5 rounded-2xl shadow-xl hidden transition-all duration-300">
                 <h3 class="text-sm font-bold text-cyan-400 mb-3 flex items-center gap-2">
                     <i data-lucide="terminal" class="w-4 h-4"></i> كود الـ Loader للاكسيكيوتر:
@@ -67,13 +73,14 @@
                 <p class="text-[11px] text-slate-400 mb-2">انسخ الكود أدناه وضعه في ملف الـ Lua لتوزيعه على مستخدميك:</p>
                 <div class="relative bg-slate-900 p-3 rounded-xl border border-slate-800/80 font-mono text-xs text-rose-300 break-all select-all">
                     <pre id="luaOutput" class="whitespace-pre-wrap text-[11px]"></pre>
-                    <button onclick="copyLuaCode()" class="absolute top-2 left-2 p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-md transition cursor-pointer" title="نسخ الكود">
+                    <button type="button" onclick="copyLuaCode()" class="absolute top-2 left-2 p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-md transition cursor-pointer" title="نسخ الكود">
                         <i data-lucide="copy" class="w-3.5 h-3.5"></i>
                     </button>
                 </div>
             </div>
         </div>
 
+        <!-- Right Main Panel: Control Form -->
         <div class="lg:col-span-2 cyber-panel border p-6 md:p-8 rounded-3xl shadow-2xl relative">
             
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-6 border-b border-slate-800/60">
@@ -128,6 +135,7 @@
         </div>
     </main>
 
+    <!-- Footer -->
     <footer class="w-full max-w-6xl mx-auto mt-8 pt-4 border-t border-slate-900 text-center text-xs text-slate-600 flex flex-col sm:flex-row justify-between items-center gap-2">
         <p>Premium Protection Loader Sync Dashboard</p>
         <p class="font-mono text-slate-500">All rights reserved to Harbawi (@j_w_j_m)</p>
@@ -147,10 +155,9 @@
             const scriptKey = document.getElementById('scriptKey').value.trim();
             const scriptContent = document.getElementById('scriptContent').value.trim();
 
-            // إعداد رسالة الانتظار
             status.classList.remove('hidden', 'bg-rose-500/10', 'text-rose-400', 'border-rose-500/20', 'bg-emerald-500/10', 'text-emerald-400', 'border-emerald-500/20');
             status.classList.add('bg-cyan-500/10', 'text-cyan-400', 'border-cyan-500/20');
-            status.innerHTML = `<i data-lucide="loader" class="w-4 h-4 animate-spin"></i> جاري مزامنة وحفظ البيانات سحابياً...`;
+            status.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin"></i> جاري مزامنة وحفظ البيانات سحابياً...';
             lucide.createIcons();
 
             try {
@@ -159,31 +166,30 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ scriptName, scriptKey, scriptContent })
                 });
-                const result = await response.json();
                 
+                const result = await response.json();
                 status.classList.remove('bg-cyan-500/10', 'text-cyan-400', 'border-cyan-500/20');
                 
-                if(response.ok) {
+                if (response.ok) {
                     status.classList.add('bg-emerald-500/10', 'text-emerald-400', 'border-emerald-500/20');
-                    status.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4"></i> \${result.message || 'تم رفع ونشر السكربت الجديد بنجاح آمن!'}`;
+                    status.innerHTML = '<i data-lucide="check-circle" class="w-4 h-4"></i> تم رفع ونشر السكربت الجديد بنجاح آمن!';
                     
-                    // جلب الرابط الحالي للموقع ديناميكياً لبناء اللود سترينق
                     const currentDomain = window.location.origin;
-                    const fullLoaderURL = `\${currentDomain}/api/check-key?key=\${scriptKey}`;
+                    const fullLoaderURL = currentDomain + '/api/check-key?key=' + scriptKey;
                     
-                    // توليد كود لودسترينق جاهز ومخصص للاكسيكيوتر
-                    const generatedLua = `--[[ \n   Lord Zayro Secure Loader Sync\n   Script: \${scriptName}\n--]]\n\nlocal currentKey = "\${scriptKey}"\nlocal serverURL = "\${fullLoaderURL}"\n\nlocal success, payload = pcall(function()\n    return game:HttpGetAsync(serverURL)\nend)\n\nif success and payload then\n    if string.sub(payload, 1, 2) == "--" and string.find(payload, "Error") then\n        warn(payload)\n    else\n        local runScript = loadstring(payload)\n        if runScript then runScript() else print("Failed to compile script payload.") end\n    end\nelse\n    warn("Connection failed to Lord Zayro Shield Server.")\nend`;
+                    // توليد كود لودسترينق مدمج ومحمي نقي 100% بدون باك تيكس لمنع مشاكل التحويل
+                    const generatedLua = "--[[ \n   Lord Zayro Secure Loader Sync\n   Script: " + scriptName + "\n--]]\n\nlocal currentKey = \"" + scriptKey + "\"\nlocal serverURL = \" " + fullLoaderURL + " \"\n\nlocal success, payload = pcall(function()\n    return game:HttpGetAsync(serverURL:gsub(\" \", \"\"))\nend)\n\nif success and payload then\n    if string.sub(payload, 1, 2) == \"--\" and string.find(payload, \"Error\") then\n        warn(payload)\n    else\n        local runScript = loadstring(payload)\n        if runScript then runScript() else print(\"Failed to compile script payload.\") end\n    end\nelse\n    warn(\"Connection failed to Lord Zayro Shield Server.\")\nend";
                     
                     luaOutput.textContent = generatedLua;
                     loadstringCard.classList.remove('hidden');
                 } else {
                     status.classList.add('bg-rose-500/10', 'text-rose-400', 'border-rose-500/20');
-                    status.innerHTML = `<i data-lucide="x-circle" class="w-4 h-4"></i> حدث خطأ بالخادم: \${result.error}`;
+                    status.innerHTML = '<i data-lucide="x-circle" class="w-4 h-4"></i> حدث خطأ بالخادم: ' + (result.error || 'فشل الحفظ');
                 }
             } catch (err) {
                 status.classList.remove('bg-cyan-500/10', 'text-cyan-400', 'border-cyan-500/20');
                 status.classList.add('bg-rose-500/10', 'text-rose-400', 'border-rose-500/20');
-                status.innerHTML = `<i data-lucide="wifi-off" class="w-4 h-4"></i> فشل في توجيه الطلب، تحقق من اتصال خادم Railway الخاص بك.`;
+                status.innerHTML = '<i data-lucide="wifi-off" class="w-4 h-4"></i> فشل في توجيه الطلب، تحقق من اتصال خادم Railway الخاص بك.';
             }
             lucide.createIcons();
         });
