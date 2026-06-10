@@ -11,7 +11,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// جلب مسار قاعدة البيانات من بيئة تشغيل سيرفر Railway
+// جلب مسار قاعدة البيانات من بيئة تشغيل سيرفر Railway الآمنة
 const MONGO_URI = process.env.MONGO_URI;
 
 if (MONGO_URI) {
@@ -22,51 +22,58 @@ if (MONGO_URI) {
     console.warn("Warning: MONGO_URI environment variable is missing.");
 }
 
-// هيكل البيانات لحفظ السكربتات المشفرة
+// هيكل قاعدة البيانات لحفظ البيانات مشفرة بالكامل بـ Hercules + VM
 const scriptSchema = new mongoose.Schema({
     scriptName: { type: String, required: true },
     scriptKey: { type: String, required: true, unique: true },
-    scriptContent: { type: String, required: true }, // سيتم حفظ الكود مشفراً هنا
+    scriptContent: { type: String, required: true }, 
     createdAt: { type: Date, default: Date.now }
 });
 
 const Script = mongoose.model('Script', scriptSchema);
 
 /**
- * دالة ذكية لتشغيل ملفات مشروع هيركوليز المرفوعة وتشفير الكود فورياً
+ * دالة تشغيل التشفير الكامل لـ Hercules من داخل مجلد [obfuscator]
  */
 function obfuscateLuaCode(rawCode) {
     return new Promise((resolve, reject) => {
-        const tempInputPath = path.join(__dirname, 'temp_input.lua');
-        const tempOutputPath = path.join(__dirname, 'temp_input_obfuscated.lua');
+        const obfuscatorDir = path.join(__dirname, 'obfuscator');
+        
+        // توليد اسم عشوائي وفريد للملف المؤقت لتفادي تداخل الطلبات المتزامنة
+        const fileId = Math.random().toString(36).substring(7);
+        const tempInputName = `temp_${fileId}.lua`;
+        const tempOutputName = `temp_${fileId}_obfuscated.lua`;
 
-        // 1. كتابة الكود النقي في ملف مؤقت
+        const tempInputPath = path.join(obfuscatorDir, tempInputName);
+        const tempOutputPath = path.join(obfuscatorDir, tempOutputName);
+
+        // 1. كتابة الكود النقي في المجلد الفرعي للتشفير
         fs.writeFileSync(tempInputPath, rawCode, 'utf8');
 
-        // 2. تشغيل التشفير عبر الـ CLI الخاص بـ hercules.lua المرفوع
-        // تأكد من وجود ملف hercules.lua وبقية ملفات الحماية في نفس المجلد الرئيسي للمشروع
-        exec(`lua hercules.lua temp_input.lua`, (error, stdout, stderr) => {
-            // حذف ملف المدخلات النقي فوراً لأمان السورس كود
+        // 2. استدعاء hercules.lua مع تحديد مجلد العمل (cwd) لتقرأ لغة ليركوليز ملفاتها وإعداداتها بشكل صحيح
+        exec(`lua hercules.lua ${tempInputName}`, { cwd: obfuscatorDir }, (error, stdout, stderr) => {
+            // حذف ملف المدخلات النقي فوراً لحماية تامة للسورس كود
             if (fs.existsSync(tempInputPath)) fs.unlinkSync(tempInputPath);
 
             if (error) {
-                console.error("Hercules Obfuscation CLI Error:", stderr);
-                return reject("فشل في معالجة وتشفير الكود عبر محرك Hercules.");
+                console.error("Hercules Obfuscation CLI Error:", stderr || stdout);
+                if (fs.existsSync(tempOutputPath)) fs.unlinkSync(tempOutputPath);
+                return reject("فشل في معالجة وتشفير الكود عبر محرك Hercules الـ VM.");
             }
 
-            // 3. قراءة الكود المشفر بالكامل الناتج من المنظومة
+            // 3. قراءة الكود المحمي والمشفر الناتج عن المنظومة بالكامل
             if (fs.existsSync(tempOutputPath)) {
                 const obfuscatedResult = fs.readFileSync(tempOutputPath, 'utf8');
-                fs.unlinkSync(tempOutputPath); // تنظيف الملف المؤقت المشفر
+                fs.unlinkSync(tempOutputPath); // تنظيف وتطهير ملف المخرجات المؤقت
                 resolve(obfuscatedResult);
             } else {
-                reject("لم يتم العثور على مخرجات التشفير المحمية.");
+                reject("لم يتم العثور على مخرجات التشفير النهائية؛ يرجى التحقق من إعدادات الحزمة.");
             }
         });
     });
 }
 
-// Endpoint: استقبال وتشفير وحفظ السكربت آلياً 🛡️
+// Endpoint: استقبال وتشفير وحفظ السكربت تلقائياً
 app.post('/api/upload', async (req, res) => {
     try {
         const { scriptName, scriptKey, scriptContent } = req.body;
@@ -80,9 +87,9 @@ app.post('/api/upload', async (req, res) => {
             return res.status(400).json({ error: "هذا المفتاح (Key) مستخدم بالفعل لسكربت آخر." });
         }
 
-        console.log(`[🔒 Shield Engine] Obfuscating ${scriptName} via Hercules Pipeline...`);
+        console.log(`[🔒 Hercules VM Pipeline] Processing and encrypting: ${scriptName}`);
         
-        // استدعاء التشفير التلقائي
+        // تمرير الكود عبر دالة التشفير الشاملة
         let finalProtectedCode;
         try {
             finalProtectedCode = await obfuscateLuaCode(scriptContent);
@@ -90,7 +97,7 @@ app.post('/api/upload', async (req, res) => {
             return res.status(500).json({ error: obfError });
         }
 
-        // حفظ الكود المشفر والـ VM في قاعدة البيانات دقة 100%
+        // حفظ الكود المشفر في قاعدة البيانات دقة 100%
         const newScript = new Script({ 
             scriptName, 
             scriptKey, 
@@ -98,14 +105,14 @@ app.post('/api/upload', async (req, res) => {
         });
         await newScript.save();
 
-        res.status(200).json({ message: "تم تشفير السكربت بـ Hercules وحفظه سحابياً بنجاح!" });
+        res.status(200).json({ message: "تم التشفير بـ Hercules VM وحفظه سحابياً بنجاح!" });
     } catch (error) {
         console.error("Internal Server Error:", error);
         res.status(500).json({ error: "حدث خطأ داخلي في الخادم أثناء معالجة البيانات." });
     }
 });
 
-// Endpoint: التحقق من المفتاح وجلب السكربت المشفر (مع حظر المتصفحات)
+// Endpoint: التحقق من المفتاح وجلب السكربت المشفر (مع حظر المتصفحات تماماً لحماية السورس)
 app.get('/api/check-key', async (req, res) => {
     try {
         const { key } = req.query;
@@ -115,8 +122,9 @@ app.get('/api/check-key', async (req, res) => {
 
         const userAgent = req.headers['user-agent'] || '';
 
-        // حظر المتصفحات لحماية السكربت والـ VM من التسريب الخارجي
+        // منع المتصفحات من رؤية السورس كود
         if (!userAgent.includes('Roblox')) {
+            console.warn(`[⚠️ Unauthorized Attempt] Blocked browser user-agent: ${userAgent}`);
             res.set('Content-Type', 'text/plain; charset=utf-8');
             return res.status(403).send('-- [🛡️ Lord Zayro Shield]: Access Denied. Browsers are completely blocked from viewing this core source.');
         }
@@ -126,7 +134,7 @@ app.get('/api/check-key', async (req, res) => {
             return res.status(404).send('-- Error: Invalid or expired key');
         }
 
-        // تسليم الكود المشفر الجاهز للاكسيكيوتر مباشرة
+        // تسليم الكود المشفر المحمي بالكامل للـ Executor مباشرة
         res.set('Content-Type', 'text/plain');
         res.status(200).send(foundScript.scriptContent);
     } catch (error) {
@@ -141,5 +149,5 @@ app.get('*', (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server is running smoothly on port ${PORT}`);
+    console.log(`Hercules Shield Main Server is running smoothly on port ${PORT}`);
 });
