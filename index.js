@@ -1,83 +1,92 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors');
 const path = require('path');
+
 const app = express();
 
+// تفعيل حزم الدعم وقراءة البيانات الممررة
+app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '../public')));
+app.use(express.static(path.join(__dirname, 'public')));
 
-// الاتصال بقاعدة البيانات عبر متغيرات البيئة الآمنة في فيرسل
+// جلب رابط الاتصال بقاعدة البيانات من متغيرات البيئة الآمنة
 const MONGO_URI = process.env.MONGO_URI;
 
 if (MONGO_URI) {
-    mongoose.connect(MONGO_URI)
-      .then(() => console.log("Connected to MongoDB Successfully"))
-      .catch(err => console.error("MongoDB connection error:", err));
+    mongoose.connect(MONGO_URI, {
+        serverSelectionTimeoutMS: 5000 
+    })
+    .then(() => console.log("Connected to MongoDB Successfully"))
+    .catch(err => console.error("MongoDB initial connection error:", err));
 } else {
     console.warn("Warning: MONGO_URI environment variable is missing.");
 }
 
-// تعريف موديل السكربتات في قاعدة البيانات
-const ScriptSchema = new mongoose.Schema({
-    scriptName: { type: String, required: true, unique: true },
+// تعريف هيكل بيانات السكربتات داخل قاعدة البيانات (Schema)
+const scriptSchema = new mongoose.Schema({
+    scriptName: { type: String, required: true },
+    scriptKey: { type: String, required: true, unique: true },
     scriptContent: { type: String, required: true },
-    authKey: { type: String, required: true },
-    isActive: { type: Boolean, default: true },
-    updatedAt: { type: Date, default: Date.now }
+    createdAt: { type: Date, default: Date.now }
 });
 
-const Script = mongoose.models.Script || mongoose.model('Script', ScriptSchema);
+const Script = mongoose.model('Script', scriptSchema);
 
-// 1. API رفع وتحديث السكربتات من لوحة التحكم
+// Endpoint: استقبال وحفظ السكربت الجديد من لوحة التحكم
 app.post('/api/upload', async (req, res) => {
-    const { scriptName, scriptContent, authKey, isActive } = req.body;
     try {
-        if (!scriptName || !scriptContent || !authKey) {
-            return res.status(400).json({ success: false, error: "جميع الحقول مطلوبة" });
+        const { scriptName, scriptKey, scriptContent } = req.body;
+
+        if (!scriptName || !scriptKey || !scriptContent) {
+            return res.status(400).json({ error: "جميع الحقول مطلوبة لتأمين السكربت." });
         }
-        
-        let script = await Script.findOne({ scriptName });
-        if (script) {
-            script.scriptContent = scriptContent;
-            script.authKey = authKey;
-            script.isActive = isActive;
-            script.updatedAt = Date.now();
-            await script.save();
-            return res.json({ success: true, message: "تم تحديث السكربت بنجاح !" });
-        } else {
-            script = new Script({ scriptName, scriptContent, authKey, isActive });
-            await script.save();
-            return res.json({ success: true, message: "تم رفع ونشر السكربت الجديد بنجاح آمن!" });
+
+        // التحقق من عدم تكرار المفتاح
+        const existingScript = await Script.findOne({ scriptKey });
+        if (existingScript) {
+            return res.status(400).json({ error: "هذا المفتاح (Key) مستخدم بالفعل لسكربت آخر." });
         }
+
+        const newScript = new Script({ scriptName, scriptKey, scriptContent });
+        await newScript.save();
+
+        res.status(200).json({ message: "تم رفع ونشر السكربت الجديد بنجاح آمن!" });
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        console.error("Error uploading script:", error);
+        res.status(500).json({ error: "حدث خطأ داخلي في الخادم أثناء الحفظ." });
     }
 });
 
-// 2. API التحقق وجلب السكربت مخصص للاكسيكيوتر فقط مع منع المتصفحات
-app.get('/api/get-script', async (req, res) => {
-    const scriptName = req.query.name;
-    const clientKey = req.headers['x-auth-key'];
-    const userAgent = req.headers['user-agent'] || '';
-
-    // نظام منع وحظر المتصفحات العادية من استعراض الكود
-    const isBrowser = userAgent.includes('Mozilla') || userAgent.includes('Chrome') || userAgent.includes('Safari');
-    if (isBrowser) {
-        return res.status(403).send("ليش داخل؟ ههههههههههههههه");
-    }
-
+// Endpoint: التحقق من المفتاح وجلب السكربت للاكسيكيوتر (Loader)
+app.get('/api/check-key', async (req, res) => {
     try {
-        const script = await Script.findOne({ scriptName });
-        if (!script) return res.status(404).send("-- السكربت غير موجود");
-        if (!script.isActive) return res.status(403).send("-- السكربت معطل");
-        if (script.authKey !== clientKey) return res.status(401).send("-- خطا");
+        const { key } = req.query;
+        if (!key) {
+            return res.status(400).send('-- Error: Key parameter is required');
+        }
 
-        // إرجاع الكود نقي ومباشر للاكسيكيوتر
-        res.setHeader('Content-Type', 'text/plain');
-        res.send(script.scriptContent);
+        const foundScript = await Script.findOne({ scriptKey: key });
+        if (!foundScript) {
+            return res.status(404).send('-- Error: Invalid or expired key');
+        }
+
+        // إرسال كود الـ Lua البرمجي النقي للاكسيكيوتر مباشرة
+        res.set('Content-Type', 'text/plain');
+        res.status(200).send(foundScript.scriptContent);
     } catch (error) {
-        res.status(500).send("-- خطا");
+        console.error("Error checking key:", error);
+        res.status(500).send('-- Error: Internal Server Error');
     }
 });
 
-module.exports = app;
+// توجيه أي مسار آخر لواجهة المستخدم
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// تحديد المنفذ الديناميكي لتشغيل السيرفر على Railway
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server is running smoothly on port ${PORT}`);
+});
