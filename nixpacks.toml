@@ -1,0 +1,6 @@
+[providers]
+providers = ["node"]
+
+[phases.setup]
+dependsOn = ["base"]
+pkgs = ["...packs", "nodejs", "lua51", "lua51-bitop"]
