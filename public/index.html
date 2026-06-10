@@ -3,188 +3,190 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lord Zayro | Ultimate Script Shield</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <title>Lord Zayro | Script Shield Dashboard</title>
     <style>
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        :root {
+            --neon-cyan: #00f3ff;
+            --neon-magenta: #ff0055;
+            --bg-dark: #0a0a12;
+            --card-bg: #121225;
         }
-        .animated-bg {
-            background: linear-gradient(-45deg, #0f172a, #1e1b4b, #111827, #030712);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
+
+        body {
+            background-color: var(--bg-dark);
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: var(--card-bg);
+            border: 2px solid var(--neon-cyan);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+            border-radius: 12px;
+            padding: 30px;
+            width: 100%;
+            max-width: 650px;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--neon-cyan);
+            font-weight: bold;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 12px;
+            background: #181830;
+            border: 1px solid #333366;
+            border-radius: 6px;
+            color: #fff;
+            font-size: 15px;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus, textarea:focus {
+            border-color: var(--neon-magenta);
+            outline: none;
+            box-shadow: 0 0 10px rgba(255, 0, 85, 0.3);
+        }
+
+        textarea {
+            height: 180px;
+            font-family: 'Courier New', Courier, monospace;
+            resize: vertical;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(45deg, var(--neon-magenta), #bc003f);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px rgba(255, 0, 85, 0.7);
+        }
+
+        .status-msg {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+        }
+
+        .success {
+            background: rgba(0, 255, 100, 0.15);
+            color: #00ff64;
+            border: 1px solid #00ff64;
+        }
+
+        .error {
+            background: rgba(255, 0, 85, 0.15);
+            color: var(--neon-magenta);
+            border: 1px solid var(--neon-magenta);
         }
     </style>
 </head>
-<body class="animated-bg text-slate-100 font-sans min-h-screen p-4 md:p-8 flex flex-col justify-between">
+<body>
 
-    <header class="w-full max-w-6xl mx-auto flex justify-between items-center bg-slate-900/80 backdrop-blur-md border border-slate-800 p-4 rounded-2xl mb-8 shadow-lg">
-        <div class="flex items-center gap-3">
-            <div class="p-2.5 bg-blue-500/10 rounded-xl text-blue-400 border border-blue-500/20">
-                <i data-lucide="shield-check" class="w-7 h-7"></i>
-            </div>
-            <div>
-                <h1 class="text-xl font-bold tracking-wide bg-gradient-to-r from-blue-400 via-indigo-400 to-emerald-400 bg-clip-text text-transparent">LORD ZAYRO</h1>
-                <p class="text-xs text-slate-400">Script Protection Hub</p>
-            </div>
-        </div>
-        <div class="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-3 py-1.5 rounded-xl text-xs font-medium">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            نظام التحكم سحابي نشط
-        </div>
-    </header>
+<div class="container">
+    <h1>🛡️ LORD ZAYRO | SCRIPT SHIELD 🛡️</h1>
+    
+    <div class="form-group">
+        <label for="scriptName">⚙️ اسم السكربت:</label>
+        <input type="text" id="scriptName" placeholder="مثال: Blox Fruits Hub">
+    </div>
 
-    <main class="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 items-start flex-grow">
-        
-        <div class="lg:col-span-1 space-y-6">
-            <div class="bg-slate-900/60 backdrop-blur-md border border-slate-800 p-6 rounded-2xl shadow-xl">
-                <h3 class="text-md font-bold mb-4 flex items-center gap-2 text-slate-300">
-                    <i data-lucide="activity" class="w-5 h-5 text-indigo-400"></i> حالة النظام الإجمالية
-                </h3>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800/80">
-                        <span class="text-xs text-slate-400 block mb-1">الخادم (Vercel)</span>
-                        <span class="text-sm font-semibold text-blue-400 flex items-center gap-1">
-                            <i data-lucide="server" class="w-3.5 h-3.5"></i> نشط ممتاز
-                        </span>
-                    </div>
-                    <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800/80">
-                        <span class="text-xs text-slate-400 block mb-1">حماية المتصفح</span>
-                        <span class="text-sm font-semibold text-emerald-400 flex items-center gap-1">
-                            <i data-lucide="lock" class="w-3.5 h-3.5"></i> تعمل 100%
-                        </span>
-                    </div>
-                </div>
-            </div>
+    <div class="form-group">
+        <label for="scriptKey">🔑 مفتاح التحقق (Key):</label>
+        <input type="text" id="scriptKey" placeholder="أدخل مفتاحاً فريداً لتشغيل السكربت">
+    </div>
 
-            <div class="bg-gradient-to-br from-indigo-900/40 to-slate-900/60 backdrop-blur-md border border-indigo-500/20 p-6 rounded-2xl shadow-xl relative overflow-hidden">
-                <div class="absolute -right-8 -bottom-8 text-indigo-500/5 pointer-events-none">
-                    <i data-lucide="code-2" class="w-32 h-32"></i>
-                </div>
-                <h3 class="text-md font-bold text-indigo-300 mb-2 flex items-center gap-2">
-                    <i data-lucide="terminal" class="w-5 h-5"></i> ميزة التحديث الفوري
-                </h3>
-                <p class="text-xs text-slate-300 leading-relaxed">
-                    بمجرد ضغطك على زر <span class="text-emerald-400 font-bold">"نشر وحفظ السكربت"</span>، سيتم تحديث الكود تلقائياً لدى جميع المستخدمين داخل الـ Executor دون الحاجة لإعادة توزيع الملفات.
-                </p>
-            </div>
-        </div>
+    <div class="form-group">
+        <label for="scriptContent">📜 كود الـ Lua (Script):</label>
+        <textarea id="scriptContent" placeholder="قم بلصق كود الـ Lua هنا..."></textarea>
+    </div>
 
-        <div class="lg:col-span-2 bg-slate-900/40 backdrop-blur-md border border-slate-800/80 p-6 md:p-8 rounded-3xl shadow-2xl relative">
-            
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-6 border-b border-slate-800">
-                <div>
-                    <h2 class="text-xl font-bold flex items-center gap-2 text-white">
-                        <i data-lucide="cloud-lightning" class="w-6 h-6 text-yellow-400"></i> إدارة وحقن السكربت الذكي
-                    </h2>
-                    <p class="text-xs text-slate-400 mt-1">قم بتعبئة بيانات السكربت ومفتاح التحقق للتحكم بالوصول عن بعد</p>
-                </div>
-            </div>
+    <button onclick="uploadScript()">🚀 تشفير ونشر السكربت آمن</button>
 
-            <form id="uploadForm" class="space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-1.5">
-                            <i data-lucide="file-signature" class="w-4 h-4 text-blue-400"></i> معرف السكربت (Identifier)
-                        </label>
-                        <input type="text" id="scriptName" required placeholder="مثال: BloxFruitsMain" 
-                               class="w-full px-4 py-3 bg-slate-950/80 border border-slate-800 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition text-emerald-400 font-mono text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-1.5">
-                            <i data-lucide="key-round" class="w-4 h-4 text-indigo-400"></i> المفتاح السري المخصص (Auth Key)
-                        </label>
-                        <input type="text" id="authKey" required placeholder="أدخل كود التحقق للمخدم" 
-                               class="w-full px-4 py-3 bg-slate-950/80 border border-slate-800 rounded-xl focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition font-mono text-sm">
-                    </div>
-                </div>
+    <div id="statusBox" class="status-msg"></div>
+</div>
 
-                <div>
-                    <div class="flex justify-between items-center mb-2">
-                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                            <i data-lucide="code" class="w-4 h-4 text-emerald-400"></i> كود الـ Lua المحمي (Source Code)
-                        </label>
-                        <span class="text-[10px] text-slate-500 font-mono">Environment: Executor Only</span>
-                    </div>
-                    <div class="relative rounded-xl overflow-hidden border border-slate-800">
-                        <textarea id="scriptContent" rows="10" required placeholder="-- ضع كود الـ Lua هنا للبدء بحمايته من الـ Decompile والـ Browsers..." 
-                                  class="w-full block p-4 bg-slate-950/90 focus:outline-none font-mono text-sm text-blue-300 leading-relaxed resize-y"></textarea>
-                    </div>
-                </div>
+<script>
+    async function uploadScript() {
+        const scriptName = document.getElementById('scriptName').value.trim();
+        const scriptKey = document.getElementById('scriptKey').value.trim();
+        const scriptContent = document.getElementById('scriptContent').value.trim();
+        const statusBox = document.getElementById('statusBox');
 
-                <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-800/60">
-                    <div class="flex items-center gap-4 bg-slate-950/40 p-3 rounded-xl border border-slate-800 w-full sm:w-auto justify-between sm:justify-start">
-                        <div class="text-right">
-                            <span class="block text-xs font-bold text-slate-200">الوصول عن بعد</span>
-                            <span class="text-[10px] text-slate-400">إيقاف/تشغيل السكربت فورياً</span>
-                        </div>
-                        <label class="relative inline-flex items-center cursor-pointer select-none">
-                            <input type="checkbox" id="isActive" checked class="sr-only peer">
-                            <div class="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-slate-400 after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-emerald-500 peer-checked:to-teal-500"></div>
-                        </label>
-                    </div>
+        if (!scriptName || !scriptKey || !scriptContent) {
+            showStatus('يرجى ملء جميع الحقول المطلوبة أولاً!', 'error');
+            return;
+        }
 
-                    <button type="submit" class="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-500 text-white font-bold rounded-xl hover:opacity-95 shadow-lg shadow-indigo-500/10 hover:shadow-indigo-500/20 transition-all duration-200 cursor-pointer flex items-center justify-center gap-2 group">
-                        <span>نشر وحفظ السكربت</span>
-                        <i data-lucide="send" class="w-4 h-4 group-hover:translate-x-[-2px] group-hover:translate-y-[-2px] transition-transform"></i>
-                    </button>
-                </div>
-            </form>
+        showStatus('جاري تشفير وحفظ السكربت سحابياً...', 'success');
 
-            <div id="statusMessage" class="mt-4 p-3.5 rounded-xl text-center hidden font-medium text-sm border flex items-center justify-center gap-2"></div>
-        </div>
-    </main>
+        try {
+            const response = await fetch('/api/upload', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ scriptName, scriptKey, scriptContent })
+            });
 
-    <footer class="w-full max-w-6xl mx-auto mt-8 pt-4 border-t border-slate-900/40 text-center text-xs text-slate-500 flex flex-col sm:flex-row justify-between items-center gap-2">
-        <p>Premium Protection Loader Sync Dashboard</p>
-        <p class="font-mono text-slate-400">All rights reserved to Harbawi (@j_w_j_m)</p>
-    </footer>
+            const result = await response.json();
 
-    <script>
-        lucide.createIcons();
-
-        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const status = document.getElementById('statusMessage');
-            
-            const data = {
-                scriptName: document.getElementById('scriptName').value,
-                authKey: document.getElementById('authKey').value,
-                scriptContent: document.getElementById('scriptContent').value,
-                isActive: document.getElementById('isActive').checked
-            };
-
-            status.classList.remove('hidden', 'bg-red-500/10', 'text-red-400', 'border-red-500/20', 'bg-emerald-500/10', 'text-emerald-400', 'border-emerald-500/20');
-            status.classList.add('bg-blue-500/10', 'text-blue-400', 'border-blue-500/20');
-            status.innerHTML = `<i data-lucide="loader" class="w-4 h-4 animate-spin"></i> جاري مزامنة وحفظ البيانات سحابياً...`;
-            lucide.createIcons();
-
-            try {
-                const response = await fetch('/api/upload', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                const result = await response.json();
-                
-                status.classList.remove('bg-blue-500/10', 'text-blue-400', 'border-blue-500/20');
-                if(result.success) {
-                    status.classList.add('bg-emerald-500/10', 'text-emerald-400', 'border-emerald-500/20');
-                    status.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4"></i> \${result.message}`;
-                } else {
-                    status.classList.add('bg-red-500/10', 'text-red-400', 'border-red-500/20');
-                    status.innerHTML = `<i data-lucide="x-circle" class="w-4 h-4"></i> حدث خطأ بالخادم: \${result.error}`;
-                }
-            } catch (err) {
-                status.classList.remove('bg-blue-500/10', 'text-blue-400', 'border-blue-500/20');
-                status.classList.add('bg-red-500/10', 'text-red-400', 'border-red-500/20');
-                status.innerHTML = `<i data-lucide="wifi-off" class="w-4 h-4"></i> فشل في توجيه الطلب، تحقق من الرفع على Vercel.`;
+            if (response.ok) {
+                showStatus(`✅ ${result.message}`, 'success');
+                // تنظيف الحقول بعد النجاح
+                document.getElementById('scriptName').value = '';
+                document.getElementById('scriptKey').value = '';
+                document.getElementById('scriptContent').value = '';
+            } else {
+                showStatus(`❌ خطأ: ${result.error}`, 'error');
             }
-            lucide.createIcons();
-        });
-    </script>
+        } catch (err) {
+            showStatus('❌ فشل الاتصال بالخادم، تأكد من تشغيل الـ Backend!', 'error');
+        }
+    }
+
+    function showStatus(msg, type) {
+        const statusBox = document.getElementById('statusBox');
+        statusBox.textContent = msg;
+        statusBox.className = `status-msg ${type}`;
+        statusBox.style.display = 'block';
+    }
+</script>
+
 </body>
 </html>
