@@ -3,4 +3,11 @@ providers = ["node"]
 
 [phases.setup]
 dependsOn = ["base"]
-pkgs = ["...packs", "nodejs", "lua51", "lua51-bitop"]
+pkgs = ["nodejs", "lua51", "lua51-bitop", "gcc"]
+
+[phases.build]
+dependsOn = ["setup"]
+cmds = ["npm ci"]
+
+[start]
+cmd = "node index.js"
